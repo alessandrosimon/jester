@@ -61,6 +61,20 @@ class Tokenizer:
         return self.source[index]
     
     def advance(self):
+        char = self.peek()
+        self.position += 1
+        return char
+
+    def at_end(self):
+        return self.position >= len(self.source)
+
+    def skip_whitespace(self):
+        while self.peek().isspace():
+            self.position += 1
+
+        
+        
+
 
 
 
