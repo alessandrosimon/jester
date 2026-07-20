@@ -1,0 +1,20 @@
+functional SimpleFMT {
+    density rho;
+
+    kernel w0 : scalar;
+    kernel w1 : scalar;
+    kernel w2 : scalar;
+    kernel w3 : scalar;
+
+    weighted n0 = conv(w0, rho);
+    weighted n1 = conv(w1, rho);
+    weighted n2 = conv(w2, rho);
+    weighted n3 = conv(w3, rho);
+
+    let A = 1 - n3;
+
+    phi =
+        -n0*log(A)
+        + n1*n2/A
+        + 0.5*n2**3/A**2;
+}
