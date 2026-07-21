@@ -1,8 +1,13 @@
-from parser import Parser
-from tokenizer import tokenize
+from lisp_tokenizer import tokenize
+from lisp_parser import Parser
 
-parser = Parser("2+3*1")
-parser.parse()
+src = "(+ (* n1 n2) (/ n2 3))"
 
-for t in tokenize("2+3*998"):
+for t in tokenize(src):
     print(t)
+
+p = Parser(src)
+code = p.parse()
+
+for c in code:
+    print(c)
