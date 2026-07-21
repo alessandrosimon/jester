@@ -2,17 +2,17 @@
   (dimension 3)
 
   (species
-    (hard-sphere rho R))
+    (rho 0.5))
 
   (weighted-densities
-    (n0  (fmt-weighted-density scalar-0 rho R))
-    (n1  (fmt-weighted-density scalar-1 rho R))
-    (n2  (fmt-weighted-density scalar-2 rho R))
-    (n3  (fmt-weighted-density scalar-3 rho R))
-    (nv1 (fmt-weighted-density vector-1 rho R))
-    (nv2 (fmt-weighted-density vector-2 rho R)))
+    (n0  (fmt-weighted-density scalar-0))
+    (n1  (fmt-weighted-density scalar-1))
+    (n2  (fmt-weighted-density scalar-2))
+    (n3  (fmt-weighted-density scalar-3))
+    (nv1 (fmt-weighted-density vector-1))
+    (nv2 (fmt-weighted-density vector-2)))
 
-  (free-energy-density
+  (free-energy-density	       
     (let
       ((one-minus-n3
          (- 1 n3))

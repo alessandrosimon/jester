@@ -1,3 +1,4 @@
+from copyreg import constructor
 from dataclasses import dataclass
 from enum import Enum, auto
 from lisp_parser import SExpr, SList, SNumber, SSymbol
@@ -13,14 +14,12 @@ class FMTMeasure(Enum):
 @dataclass(frozen=True)
 class WeightedDensity:
     name: str
-    measure: FMTMeasure
-    density_name: str
-    radius_name: str
+    weight: str
 
 @dataclass(frozen=True)
 class Species:
-    density_name: str
-    radius_name: str
+    name: str
+    radius: float
 
 @dataclass(frozen=True)
 class Functional:
@@ -28,55 +27,123 @@ class Functional:
     dimension: int
     species: tuple[Species, ...]
     weighted_densities: tuple[WeightedDensity, ...]
-    phi: SExpr
+    free_energy_density: SExpr
 
 
-def require_list(expr: SExpr) -> tuple[SExpr, ...]:
+def list_items(expr: SExpr) -> tuple[SExpr, ...]:
     if not isinstance(expr, SList):
         raise SyntaxError(f"Expected list, found {expr!r}")
 
     return expr.items
 
 
-def require_symbol(expr: SExpr) -> str:
+def symbol_name(expr: SExpr) -> str:
     if not isinstance(expr, SSymbol):
         raise SyntaxError(f"Expected symbol, found {expr!r}")
 
     return expr.name
 
 def require_symbol_name(expr: SExpr, expected: str) -> None:
-    actual = require_symbol(expr)
+    actual = symbol_name(expr)
 
     if actual != expected:
         raise SyntaxError(
             f"Expected symbol, found {expr!r}"
         )
+        
+def collect_sections(expressions: tuple[SExpr, ...]
+                     ) -> dict[str, tuple[SExpr, ...]]:
+    sections = {}
 
-def decode_sections(expr):
-    items = require_list(expr)
+    for expression in expressions:
+        items = list_items(expression)
+        head = symbol_name(items[0])
 
-    name = require_symbol(items[0])
+        if head in sections:
+            raise ValueError(f"Duplicate section: {head}")
 
-    if name == "dimension":
-        pass
-    elif name == "species":
-        pass
-    elif name == "weighted-densities":
-        pass
-    elif name == "free-energy-density":
-        pass
-    else:
-        raise SyntaxError()
+        sections[head] = items[1:]
+
+    return sections
         
     
-    
-    
+def decode_dimension(items: tuple[SExpr, ...]) -> int:
+    value = items[0]
+    if not isinstance(value, SNumber):
+        raise SyntaxError("Dimension must be a number")
+
+    return int(value.value)
+
+def decode_species(items: tuple[SExpr, ...]) -> tuple[Species, ...]:
+    results = []
+
+    for expression in items:
+        declaration = list_items(expression)
+        name = symbol_name(declaration[0])
+
+        radius_expr = declaration[1]
+
+        if not isinstance(radius_expr, SNumber):
+            raise SyntaxError()
+
+        results.append(
+            Species(
+                name=name,
+                radius=float(radius_expr.value)
+                )
+        )
+    return tuple(results)
+        
+
+def decode_weighted_densities(
+        items: tuple[SExpr, ...]
+    ) -> tuple[WeightedDensity, ...]:
+    results = []
+
+    for expression in items:
+        decl = list_items(expression)
+        name = symbol_name(decl[0])
+
+        constructor = list_items(decl[1])
+
+        # for now just allow FMT constructors
+        if symbol_name(constructor[0]) != "fmt-weighted-density":
+            raise ValueError("Supports only FMT")
+
+        weight = symbol_name(constructor[1])
+
+        results.append(
+            WeightedDensity(
+                name=name,
+                weight=weight
+                )
+        )
+    return tuple(results)
+        
+
+def decode_free_energy(items: tuple[SExpr, ...]) -> tuple[Species, ...]:
+    pass
+
+
 def decode_functional(expr: SExpr) -> Functional:
-    items = require_list(expr)
+    items = list_items(expr)
 
     require_symbol_name(items[0], "functional")
-    name = require_symbol(items[1])
+    name = symbol_name(items[1])
+    sections = collect_sections(items[2:])
 
-    sections = items[2:]
+
+    return Functional(
+        name=name,
+        dimension=decode_dimension(sections["dimension"]),
+        species=decode_species(sections["species"]),
+        weighted_densities=decode_weighted_densities(
+            sections["weighted-densities"]),
+        free_energy_density=sections["free-energy-density"][0])
+        
+        
+
+
+
 
     

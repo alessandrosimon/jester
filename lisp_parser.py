@@ -74,9 +74,11 @@ class Parser:
         raise SyntaxError(f"Unexpected token: {token.text!r}")
         
 
-    def parse(self) -> tuple[SExpr, ...]:
-        expressions = []
-        while self.current.kind != TokenKind.EOF:
-            expressions.append(self.parse_sexpr())
+    def parse(self) -> SExpr:
+        #while self.current.kind != TokenKind.EOF:
+        #expressions.append(self.parse_sexpr())
 
-        return tuple(expressions)
+        expression = self.parse_sexpr()
+        _ = self.expect(TokenKind.EOF)
+
+        return expression
