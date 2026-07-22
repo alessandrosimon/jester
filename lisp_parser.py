@@ -75,9 +75,6 @@ class Parser:
         
 
     def parse(self) -> SExpr:
-        #while self.current.kind != TokenKind.EOF:
-        #expressions.append(self.parse_sexpr())
-
         expression = self.parse_sexpr()
         _ = self.expect(TokenKind.EOF)
 

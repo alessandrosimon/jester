@@ -132,7 +132,6 @@ def decode_functional(expr: SExpr) -> Functional:
     name = symbol_name(items[1])
     sections = collect_sections(items[2:])
 
-
     return Functional(
         name=name,
         dimension=decode_dimension(sections["dimension"]),
