@@ -125,7 +125,7 @@ def apply_operator(
             req_arity(op, args, 2)
             return args[0] / args[1]
 
-        case "**":
+        case "pow":
             req_arity(op, args, 2)
             return jnp.power(args[0], args[1])
 
