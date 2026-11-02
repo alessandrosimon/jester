@@ -9,7 +9,7 @@ functionals and evaluating them with JAX. This means the computations
 run either on the CPU or GPU, and can be automatically differentiated.
 
 It currently supports Rosenfeld fundamental measure theory on a three-dimensional
-Fourier grid, though White Bear will soon be implemented as well.
+Fourier grid.
 
 ## Running an example
 
